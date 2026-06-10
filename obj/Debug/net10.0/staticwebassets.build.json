@@ -1,0 +1,1 @@
+{"Version":1,"Hash":"7zdiR2eAPsYnljvecAdQHzC3oSMfwe6/IUNcn0cEC/c=","Source":"Practice","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
