@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Practice.Data;
 using Practice.Models;
 
 namespace Practice.Controllers
 {
-    [ApiController]// Automatic Json Handling // Automatic Validation
+    [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
@@ -16,15 +17,22 @@ namespace Practice.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public async Task<IActionResult> GetProducts(
+            CancellationToken cancellationToken)
         {
-            return Ok(_context.Products.ToList());
+            var products = await _context.Products
+                .ToListAsync(cancellationToken);
+
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProductById(int id)
+        public async Task<IActionResult> GetProductById(
+            int id,
+            CancellationToken cancellationToken)
         {
-            var product = _context.Products.Find(id);
+            var product = await _context.Products
+                .FindAsync(new object[] { id }, cancellationToken);
 
             if (product == null)
                 return NotFound();
@@ -33,19 +41,28 @@ namespace Practice.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(Product product)
+        public async Task<IActionResult> CreateProduct(
+            Product product,
+            CancellationToken cancellationToken)
         {
-            _context.Products.Add(product);
+            await _context.Products.AddAsync(
+                product,
+                cancellationToken);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(
+                cancellationToken);
 
             return Ok(product);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, Product updatedProduct)
+        public async Task<IActionResult> UpdateProduct(
+            int id,
+            Product updatedProduct,
+            CancellationToken cancellationToken)
         {
-            var product = _context.Products.Find(id);
+            var product = await _context.Products
+                .FindAsync(new object[] { id }, cancellationToken);
 
             if (product == null)
                 return NotFound();
@@ -53,22 +70,27 @@ namespace Practice.Controllers
             product.Name = updatedProduct.Name;
             product.Price = updatedProduct.Price;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(
+                cancellationToken);
 
             return Ok(product);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct(
+            int id,
+            CancellationToken cancellationToken)
         {
-            var product = _context.Products.Find(id);
+            var product = await _context.Products
+                .FindAsync(new object[] { id }, cancellationToken);
 
             if (product == null)
                 return NotFound();
 
             _context.Products.Remove(product);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(
+                cancellationToken);
 
             return NoContent();
         }

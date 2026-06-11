@@ -5,7 +5,12 @@ using Microsoft.IdentityModel.Tokens;
 using Practice.Data;
 using Practice.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddControllers();

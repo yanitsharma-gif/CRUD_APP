@@ -3,10 +3,11 @@ using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
+using Practice.Commands;
 using Practice.Data;
 using Practice.Models;
 using Practice.Services;
-
+using MediatR;
 
 
 namespace Practice.Controllers;
@@ -17,20 +18,26 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly JwtService _jwtService;
+    private readonly IMediator _mediator;
 
     public AuthController(
         AppDbContext context,
-        JwtService jwtService)
+        JwtService jwtService,
+        IMediator mediator)
     {
         _context = context;
         _jwtService = jwtService;
+        _mediator = mediator;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(
-        Register request)
+        Register request, CancellationToken cancellationToken)
     {
-        if (request.Email == null) return BadRequest("email is not defined");
+        if (request.Email == null) return BadRequest(new {
+            message="email should not be null",
+            errorcode=404
+        });
         string email = request.Email;
 
         bool isValid1 = Regex.IsMatch(
@@ -39,9 +46,17 @@ public class AuthController : ControllerBase
 
         if (!isValid1)
         {
-            return BadRequest("Invalid email format.");
+            return BadRequest(new
+            {
+                Message = "email is not valid",
+                ErrorCode= 404
+            });
         }
-        if (request.Username == null) return BadRequest("username is not defined");
+        if (request.Username == null) return  BadRequest(new
+        {
+            Message = "username should not be null",
+            ErrorCode = 404
+        });
 
         var existingUser =
             await _context.Users
@@ -51,8 +66,10 @@ public class AuthController : ControllerBase
 
         if (existingUser != null)
         {
-            return BadRequest(
-                "Username already exists");
+            return BadRequest(new{
+                message="username already exists",
+                errorcode=403
+            });
         }
         string password = request.Password;
 
@@ -62,26 +79,29 @@ public class AuthController : ControllerBase
 
         if (!isValid)
         {
-            return BadRequest(
-                "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
+            return BadRequest(new {
+                message= "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.",
+                errorcode=403
+            }
+
+                );
         }
 
-        var user = new User
+        var result = await _mediator.Send(
+        new RegisterUserCommand(
+           request.FirstName,
+           request.LastName,
+           request.Email,
+           request.Username,
+           request.Password),
+        cancellationToken);
+
+        if (!result.Success)
         {
-            Email=email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Username = request.Username,
-            PasswordHash =
-                BCrypt.Net.BCrypt.HashPassword(
-                    request.Password)
-        };
+            return BadRequest(result);
+        }
 
-        _context.Users.Add(user);
-
-        await _context.SaveChangesAsync();
-
-        return Ok("User Registered");
+        return Ok(result);
     }
 
     [HttpPost("login")]
@@ -90,7 +110,10 @@ public class AuthController : ControllerBase
 
 
     {
-        if (request.Username == null) return BadRequest("username is not defined");
+        if (request.Username == null) return BadRequest(new{
+            message="user should not be null",
+            status=404
+        });
         var user =
             await _context.Users
                 .FirstOrDefaultAsync(
@@ -99,7 +122,11 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized("invalid credentials");
+            return Unauthorized(new{
+                message="invalid credentials",
+                status =404
+
+            });
         }
 
         var validPassword =
@@ -109,7 +136,10 @@ public class AuthController : ControllerBase
 
         if (!validPassword)
         {
-            return Unauthorized("invalid credentials ");
+            return Unauthorized(new{
+                message="invalid credentials ",
+                status=404
+            });
         }
 
         var token =
