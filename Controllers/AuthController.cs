@@ -17,7 +17,7 @@ namespace Practice.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly JwtService _jwtService;
+  
     private readonly IMediator _mediator;
 
     public AuthController(
@@ -26,7 +26,7 @@ public class AuthController : ControllerBase
         IMediator mediator)
     {
         _context = context;
-        _jwtService = jwtService;
+        
         _mediator = mediator;
     }
 
@@ -106,7 +106,7 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(
-        Login request)
+        Login request,CancellationToken cancellationToken)
 
 
     {
@@ -114,49 +114,19 @@ public class AuthController : ControllerBase
             message="user should not be null",
             status=404
         });
-        var user =
-            await _context.Users
-                .FirstOrDefaultAsync(
-                    x => x.Username ==
-                    request.Username);
+        var result = await _mediator.Send(
+       new LoginUserCommand(
+          request.Username,
+          request.Password),
+       cancellationToken);
 
-        if (user == null)
+        if (!result.Success)
         {
-            return Unauthorized(new{
-                message="invalid credentials",
-                status =404
-
-            });
+            return BadRequest(result);
         }
 
-        var validPassword =
-            BCrypt.Net.BCrypt.Verify(
-                request.Password,
-                user.PasswordHash);
+        return Ok(result);
 
-        if (!validPassword)
-        {
-            return Unauthorized(new{
-                message="invalid credentials ",
-                status=404
-            });
-        }
 
-        var token =
-            _jwtService.GenerateToken(user);
-
-        return Ok(
-            new 
-            {
-                AccessToken = token,
-                User = new
-                {
-                    user.Email,
-                    user.Id,
-                    user.FirstName,
-                    user.LastName,
-                    user.Username
-                }
-            });
     }
 }

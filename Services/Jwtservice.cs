@@ -37,7 +37,7 @@ public class JwtService
             new Claim("Email",user.Email),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim("FirstName", user.FirstName),
-            new Claim("LastName", user.LastName)
+            new Claim("LastName", user.LastName),
         };
 
         var key = new SymmetricSecurityKey(
