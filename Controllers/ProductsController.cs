@@ -61,19 +61,32 @@ namespace Practice.Controllers
             Product updatedProduct,
             CancellationToken cancellationToken)
         {
-            var product = await _context.Products
-                .FindAsync(new object[] { id }, cancellationToken);
+            try
+            {
+                var product = await _context.Products
+                    .FindAsync(new object[] { id }, cancellationToken);
+                if (product == null)
+                    return NotFound();
 
-            if (product == null)
-                return NotFound();
+                product.Name = updatedProduct.Name;
+                product.Price = updatedProduct.Price;
 
-            product.Name = updatedProduct.Name;
-            product.Price = updatedProduct.Price;
+                await _context.SaveChangesAsync(
+                    cancellationToken);
 
-            await _context.SaveChangesAsync(
-                cancellationToken);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = "an error occured while updating the product",
+                    message = ex.Message
+                });
 
-            return Ok(product);
+            }
+
+
         }
 
         [HttpDelete("{id}")]
