@@ -6,6 +6,7 @@ using Practice.Models;
 namespace Practice.Commands;
 
 public record RegisterUserCommand(
+ 
     string FirstName,
     string LastName,
     string Email,
@@ -35,6 +36,7 @@ public class RegisterUserHandler
     {
         var user = new User
         {
+            
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -44,9 +46,19 @@ public class RegisterUserHandler
                    request.Password)
         };
 
-        _context.Users.Add(user);
+        try
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+        catch(Exception error)
+        {
+            return new RegisterResult { Success=false,
+            Message =" Not unique email"};
 
-        await _context.SaveChangesAsync();
+
+        }
+      
 
         
 

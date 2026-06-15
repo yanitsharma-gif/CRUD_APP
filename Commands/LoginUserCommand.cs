@@ -9,16 +9,20 @@ using Practice.Services;
 namespace Practice.Commands;
 
     public record LoginUserCommand(
-        string Username,
-        string Password
+        User user 
         ): IRequest<LoginResult>;
 
-public class LoginResult
-{
-    public bool Success { get; set; }
+
+
+public class LoginResult 
+{ 
+    public bool   Success { get; set; }
     public string Message { get; set; } = string.Empty;
-    public string? Token { get; set; }
+    public string Token { get; set; } = string.Empty;
+
+
 }
+
 public class LoginUserHandler
 : IRequestHandler<LoginUserCommand, LoginResult>
 {
@@ -32,38 +36,11 @@ public class LoginUserHandler
     public async Task<LoginResult> Handle(
         LoginUserCommand request,
         CancellationToken cancellationToken)
-    { 
-    var user =
-            await _context.Users
-                .FirstOrDefaultAsync(
-                    x => x.Username ==
-                    request.Username);
+    {
 
-        if (user == null)
-        {
-            return new LoginResult
-            {
-                Success = false,
-                Message = "empty user"
-            };
-        }
 
-        var validPassword =
-            BCrypt.Net.BCrypt.Verify(
-                request.Password,
-                user.PasswordHash);
-
-        if (!validPassword)
-        {
-            return new LoginResult
-            {
-                Success = false,
-                Message = "invalid credentials"
-            };
-        }
-
-var token =
-    _jwtService.GenerateToken(user);
+        var token =
+    _jwtService.GenerateToken(request.user);
 
 
         return new LoginResult

@@ -33,7 +33,7 @@ public class JwtService
         var claims = new[]
         {
            
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
             new Claim("Email",user.Email),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim("FirstName", user.FirstName),

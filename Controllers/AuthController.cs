@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
 
     public AuthController(
         AppDbContext context,
-        JwtService jwtService,
+       
         IMediator mediator)
     {
         _context = context;
@@ -87,14 +87,18 @@ public class AuthController : ControllerBase
                 );
         }
 
+        
+
         var result = await _mediator.Send(
         new RegisterUserCommand(
            request.FirstName,
            request.LastName,
            request.Email,
            request.Username,
-           request.Password),
+           request.Password), 
         cancellationToken);
+
+        
 
         if (!result.Success)
         {
@@ -114,10 +118,38 @@ public class AuthController : ControllerBase
             message="user should not be null",
             status=404
         });
+        var user =
+           await _context.Users
+               .FirstOrDefaultAsync(
+                   x => x.Username ==
+                   request.Username);
+
+        if (user == null)
+        {
+            return BadRequest(new
+            {
+                Success = false,
+                Message = "empty user"
+            });
+           
+        }
+
+        var validPassword =
+            BCrypt.Net.BCrypt.Verify(
+                request.Password,
+                user.PasswordHash);
+
+        if (!validPassword)
+        {
+            return BadRequest(new
+            {
+                Success = false,
+                Message = "invalid credentials"
+            });
+        }
         var result = await _mediator.Send(
        new LoginUserCommand(
-          request.Username,
-          request.Password),
+        user),
        cancellationToken);
 
         if (!result.Success)
