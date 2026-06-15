@@ -11,7 +11,8 @@ public record RegisterUserCommand(
     string LastName,
     string Email,
     string Username,
-    string Password
+    string Password,
+    string Address
 ) : IRequest<RegisterResult>;
 
 public class RegisterResult
@@ -36,14 +37,15 @@ public class RegisterUserHandler
     {
         var user = new User
         {
-            
+
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
             Username = request.Username,
             PasswordHash =
                BCrypt.Net.BCrypt.HashPassword(
-                   request.Password)
+                   request.Password),
+               Address = request.Address
         };
 
         try
@@ -54,7 +56,7 @@ public class RegisterUserHandler
         catch(Exception error)
         {
             return new RegisterResult { Success=false,
-            Message =" Not unique email"};
+            Message = " Not unique email"};
 
 
         }

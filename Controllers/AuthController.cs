@@ -95,7 +95,8 @@ public class AuthController : ControllerBase
            request.LastName,
            request.Email,
            request.Username,
-           request.Password), 
+           request.Password,
+           request.Address), 
         cancellationToken);
 
         

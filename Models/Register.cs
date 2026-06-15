@@ -36,5 +36,6 @@ public class Register
     [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
     [DataType(DataType.Password)]
     public string Password { get; set; }=string.Empty ;
+    public string Address { get; set;  } = string.Empty;
     
 }
