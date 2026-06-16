@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Practice.Middlewares;
+using System.ComponentModel.DataAnnotations;
 
-namespace Practice.Models;
+namespace Practice.DTO;
 
 public class Register
 {

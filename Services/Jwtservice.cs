@@ -1,21 +1,22 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
+using Practice.Configurations;
 using Practice.Models;
 
 namespace Practice.Services;
 
 public class JwtService
 {
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
-    public JwtService(IConfiguration configuration)// dependency injection
+    public JwtService(IOptions<JwtSettings> options)// dependency injection
     {
-        _configuration = configuration;
+        _jwtSettings = options.Value;
     }
-
+    
     public string GenerateToken(User user)
     {
         // --- Username Validation Step ---
@@ -42,16 +43,16 @@ public class JwtService
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                _configuration["Jwt:Key"]!));
+                _jwtSettings.Key));
 
         var credentials =
             new SigningCredentials(
                 key,
                 SecurityAlgorithms.HmacSha256);
-
+        
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: credentials);

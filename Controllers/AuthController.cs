@@ -1,13 +1,13 @@
-﻿using System.Text.RegularExpressions;
-using BCrypt.Net;
+using System.Text.RegularExpressions;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
+
 using Practice.Commands;
 using Practice.Data;
-using Practice.Models;
-using Practice.Services;
+
 using MediatR;
+using Practice.DTO;
 
 
 namespace Practice.Controllers;

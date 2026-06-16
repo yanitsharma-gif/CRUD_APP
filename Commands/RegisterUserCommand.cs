@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 using Practice.Data;
 using Practice.Models;
 
@@ -55,10 +54,18 @@ public class RegisterUserHandler
         }
         catch(Exception error)
         {
-            return new RegisterResult { Success=false,
-            Message = " Not unique email"};
+            var innerMessage = error.InnerException?.Message ?? "";
 
+            if (innerMessage.Contains("IX_Users_Email"))
+                return new RegisterResult { Success = false, Message = "Email already exists" };
 
+            if (innerMessage.Contains("IX_Users_Username"))
+                return new RegisterResult { Success = false, Message = "username already taken" };
+
+            if (innerMessage.Contains("IX_Users_Address"))
+                return new RegisterResult { Success = false, Message = "Address already exists" };
+
+            return new RegisterResult { Success = false, Message = "Registration failed" };
         }
       
 

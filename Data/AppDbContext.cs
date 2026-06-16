@@ -27,6 +27,7 @@ namespace Practice.Data
                 // Only things that CAN'T be done via Data Annotations
                 entity.HasIndex(r => r.Email).IsUnique();
                 entity.HasIndex(r => r.Username).IsUnique();
+                entity.HasIndex(r => r.Address).IsUnique();
             });
         }
 

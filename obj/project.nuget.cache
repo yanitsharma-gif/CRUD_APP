@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "ubx+0VbZbzQ=",
+  "dgSpecHash": "4dM0tPnZyKo=",
   "success": true,
   "projectFilePath": "C:\\Users\\Unthinkable-lap\\source\\repos\\Practice\\Practice\\Practice.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",
+    "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\fluentvalidation\\11.11.0\\fluentvalidation.11.11.0.nupkg.sha512",
+    "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.1\\fluentvalidation.aspnetcore.11.3.1.nupkg.sha512",
+    "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.11.0\\fluentvalidation.dependencyinjectionextensions.11.11.0.nupkg.sha512",
     "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\mediatr\\14.1.0\\mediatr.14.1.0.nupkg.sha512",
     "C:\\Users\\Unthinkable-lap\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
