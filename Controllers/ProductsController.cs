@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Practice.Data;
 using Practice.Models;
-
+using MediatR;
+using Practice.Commands;
 namespace Practice.Controllers
 {
     [ApiController]
@@ -10,11 +11,15 @@ namespace Practice.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMediator _mediator;
 
-        public ProductsController(AppDbContext context)
+        public ProductsController(AppDbContext context,IMediator mediator)
         {
             _context = context;
+            _mediator=mediator;
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetProducts(
@@ -26,34 +31,51 @@ namespace Practice.Controllers
             return Ok(products);
         }
 
+
+
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(
             int id,
             CancellationToken cancellationToken)
         {
-            var product = await _context.Products
-                .FindAsync(new object[] { id }, cancellationToken);
+            var result = await _mediator.Send(new GetCommand(
+                id
+                ),cancellationToken);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
 
-            if (product == null)
-                return NotFound();
-
-            return Ok(product);
+            return Ok(result);
         }
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(
             Product product,
             CancellationToken cancellationToken)
         {
-            await _context.Products.AddAsync(
-                product,
-                cancellationToken);
 
-            await _context.SaveChangesAsync(
-                cancellationToken);
 
-            return Ok(product);
+            var result= await _mediator.Send(new CreateCommand(product),cancellationToken);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
+
+
+
+
+
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(
@@ -61,51 +83,42 @@ namespace Practice.Controllers
             Product updatedProduct,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var product = await _context.Products
-                    .FindAsync(new object[] { id }, cancellationToken);
-                if (product == null)
-                    return NotFound();
+            var result = await _mediator.Send
+                (
+                new UpdateCommand(
+                    id, updatedProduct
+                ), cancellationToken
+                );
+            if (!result.Success) {
 
-                product.Name = updatedProduct.Name;
-                product.Price = updatedProduct.Price;
-
-                await _context.SaveChangesAsync(
-                    cancellationToken);
-
-                return Ok(product);
+                return BadRequest(result);
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    error = "an error occured while updating the product",
-                    message = ex.Message
-                });
-
-            }
-
+            return Ok(result);
 
         }
+
+
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(
             int id,
             CancellationToken cancellationToken)
         {
-            var product = await _context.Products
-                .FindAsync(new object[] { id }, cancellationToken);
+            var result = await _mediator.Send(
 
-            if (product == null)
-                return NotFound();
+               new DeleteCommand(
+                   id
+                   )
+               ,cancellationToken
+                );
 
-            _context.Products.Remove(product);
-
-            await _context.SaveChangesAsync(
-                cancellationToken);
-
-            return NoContent();
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }
