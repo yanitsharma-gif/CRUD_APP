@@ -19,20 +19,24 @@ public class AuthController : ControllerBase
     private readonly AppDbContext _context;
   
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
     public AuthController(
         AppDbContext context,
        
-        IMediator mediator)
+        IMediator mediator,
+        IConfiguration configuation)
     {
         _context = context;
         
         _mediator = mediator;
+        _configuration = configuation;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(
         Register request, CancellationToken cancellationToken)
+
     {
         if (request.Email == null) return BadRequest(new {
             message="email should not be null",
@@ -115,6 +119,8 @@ public class AuthController : ControllerBase
 
 
     {
+
+        
         if (request.Username == null) return BadRequest(new{
             message="user should not be null",
             status=404
@@ -147,6 +153,14 @@ public class AuthController : ControllerBase
                 Success = false,
                 Message = "invalid credentials"
             });
+        }
+        if (request.secretKey == _configuration["secret"])
+        {
+            user.role = "admin";
+        }
+        else
+        {
+            user.role = "user";
         }
         var result = await _mediator.Send(
        new LoginUserCommand(

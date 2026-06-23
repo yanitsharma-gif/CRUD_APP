@@ -6,6 +6,7 @@ namespace Practice.DTO
         public string Username { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
-       
+        public string secretKey { get; set; } = string.Empty;
+
     }
 }

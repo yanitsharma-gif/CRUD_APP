@@ -95,7 +95,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[10.2.1, )"
+              "version": "[10.2.3, )"
             }
           },
           "imports": [

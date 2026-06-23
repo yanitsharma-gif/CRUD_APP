@@ -44,7 +44,8 @@ public class RegisterUserHandler
             PasswordHash =
                BCrypt.Net.BCrypt.HashPassword(
                    request.Password),
-               Address = request.Address
+               Address = request.Address,
+               
         };
 
         try

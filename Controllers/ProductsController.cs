@@ -1,13 +1,15 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Practice.Commands;
 using Practice.Data;
 using Practice.Models;
-using MediatR;
-using Practice.Commands;
 namespace Practice.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -36,6 +38,7 @@ namespace Practice.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "user,admin")]
         public async Task<IActionResult> GetProductById(
             int id,
             CancellationToken cancellationToken)
@@ -57,6 +60,7 @@ namespace Practice.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateProduct(
             Product product,
             CancellationToken cancellationToken)
@@ -78,6 +82,7 @@ namespace Practice.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateProduct(
             int id,
             Product updatedProduct,
@@ -102,6 +107,7 @@ namespace Practice.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteProduct(
             int id,
             CancellationToken cancellationToken)
