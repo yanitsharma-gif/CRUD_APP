@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Practice;
 using Practice.Configurations;
 using Practice.Data;
 using Practice.Middlewares;
@@ -127,6 +128,7 @@ app.UseMiddleware<CustomFactoryMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<chatHub>("/chathub");
 app.UseSwagger();
 app.UseSwaggerUI(); 
 
