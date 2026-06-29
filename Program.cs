@@ -1,7 +1,10 @@
 
 using System.Text;
 using System.Text.Json;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -10,11 +13,35 @@ using Practice.Configurations;
 using Practice.Data;
 using Practice.Middlewares;
 using Practice.Services;
+using Practice.Validators;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        return new BadRequestObjectResult(new
+        {
+            Success = false,
+            StatusCode = StatusCodes.Status400BadRequest,
+            Message = "Validation Failed",
+            Errors = errors
+        });
+    };
+});
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("Jwt"));
 var jwtSettings = builder.Configuration
@@ -33,7 +60,7 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<JwtService>();
-builder.Services.AddControllers();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -110,6 +137,7 @@ builder.Services
                 var result = new
                 {
                     success = false,
+                    StatusCode = StatusCodes.Status400BadRequest,
                     message = "You do not have access to perform this action.",
                     statusCode = 403
                 };
@@ -128,7 +156,6 @@ app.UseMiddleware<CustomFactoryMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<chatHub>("/chathub");
 app.UseSwagger();
 app.UseSwaggerUI(); 
 
