@@ -8,12 +8,12 @@ namespace Practice.Validators
 {
     public class RegisterRequestValidator : AbstractValidator<Register>
     {
-        private readonly AppDbContext _context;
+       
 
-        public RegisterRequestValidator(AppDbContext context)
+        public RegisterRequestValidator()
         {
 
-            _context = context;
+
             RuleFor(x => x.Username)
                  .Cascade(CascadeMode.Stop)
                 .NotEmpty()
@@ -21,9 +21,8 @@ namespace Practice.Validators
                 .MinimumLength(3)
                 .MaximumLength(50)
                 .Matches(@"^[a-zA-Z0-9_]+$")
-                .WithMessage("Username can only contain letters, numbers, and underscores.")
-                .MustAsync(BeUniqueUsername)
-                .WithMessage("username already exists");
+                .WithMessage("Username can only contain letters, numbers, and underscores.");
+                
 
             RuleFor(x => x.Email)
                  .Cascade(CascadeMode.Stop)
@@ -44,12 +43,6 @@ namespace Practice.Validators
                .WithMessage("Address is required");
 
         }
-        private async Task<bool> BeUniqueUsername(
-        string username,
-        CancellationToken cancellationToken)
-        {
-            return !await _context.Users
-                .AnyAsync(x => x.Username == username, cancellationToken);
-        }
+        
     }
 }

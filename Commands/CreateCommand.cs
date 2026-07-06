@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Practice.Models;
 using MediatR;
 using Practice.Data;
+using Practice.Repositories;
+using Microsoft.AspNetCore.Components.Forms.Mapping;
 namespace Practice.Commands
 {
     public record CreateCommand
@@ -20,30 +22,28 @@ namespace Practice.Commands
 
     public class CreateHandler : IRequestHandler<CreateCommand, CreateResult>
     {
-        private readonly AppDbContext _context;
+        private readonly CreateRepo _repo;
 
-        public CreateHandler(AppDbContext context)
+        public CreateHandler(CreateRepo repo)
         {
-            _context= context; ;
+            _repo = repo ;
         }
 
         public async Task<CreateResult> Handle(CreateCommand request,CancellationToken cancellationToken)
         {
-            await _context.Products.AddAsync(
-                     request.product,
-                     cancellationToken);
-            try
+
+
+
+            bool val = await _repo.Create(request.product);
+            if (!val)
             {
-                await _context.SaveChangesAsync(
-                    cancellationToken);
-            }
-            catch
-            {
-                return new CreateResult
-                {
-                    Success= false,
-                    Message="not able to save"
+                new CreateResult { 
+                    Message ="Data not added succesfully",
+                    Success=false
+          
                 };
+
+
             }
             return new CreateResult 
             

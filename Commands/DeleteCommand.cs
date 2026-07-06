@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Practice.Data;
 using MediatR;
+using Practice.Repositories;
 namespace Practice.Commands
 {
     public record DeleteCommand
@@ -18,29 +19,24 @@ namespace Practice.Commands
     public class DeleteHandler:IRequestHandler<DeleteCommand,DeleteResult>
     
     {
-        private readonly AppDbContext _context;
+        private readonly DeleteRepo _repo;
 
-        public DeleteHandler(AppDbContext context)
+        public DeleteHandler(DeleteRepo repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public async Task<DeleteResult> Handle(DeleteCommand request,CancellationToken cancellationToken)
         {
-            var product = await _context.Products
-                 .FindAsync(new object[] { request.id }, cancellationToken);
 
-            if (product == null)
+
+            var success = await _repo.Delete(request.id);
+            if (!success)
                 return new DeleteResult
                 {
                     Success = false,
                     Message = "not found"
                 };
-
-            _context.Products.Remove(product);
-
-            await _context.SaveChangesAsync(
-                cancellationToken);
 
             return new DeleteResult
             { Success=true,

@@ -18,14 +18,5 @@ public class LoginRequestValidator : AbstractValidator<Login>
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("please enter password");
-
-        RuleFor(x => x.Username)
-            .Cascade(CascadeMode.Stop)
-            .MustAsync(async (username, cancellation) =>
-            {
-                return await _context.Users
-                    .AnyAsync(u => u.Username == username, cancellation);
-            })
-            .WithMessage("User does not exist.");
     }
 }

@@ -12,6 +12,7 @@ using Practice;
 using Practice.Configurations;
 using Practice.Data;
 using Practice.Middlewares;
+using Practice.Repositories;
 using Practice.Services;
 using Practice.Validators;
 
@@ -43,7 +44,8 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
 builder.Services.Configure<JwtSettings>(
-    builder.Configuration.GetSection("Jwt"));
+builder.Configuration.GetSection("Jwt"));
+
 var jwtSettings = builder.Configuration
     .GetSection("Jwt")
     .Get<JwtSettings>();
@@ -60,7 +62,13 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<JwtService>();
-
+builder.Services.AddScoped<LoginRepo>();
+builder.Services.AddScoped<RegisterRepo>();
+builder.Services.AddScoped<GetRepo>();
+builder.Services.AddScoped<CreateRepo>();
+builder.Services.AddScoped<GetAllRepo>();
+builder.Services.AddScoped<UpdateRepo>();
+builder.Services.AddScoped<DeleteRepo>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -147,7 +155,7 @@ builder.Services
     });
     
 
- builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 builder.Services.AddTransient<CustomFactoryMiddleware>();
 
 

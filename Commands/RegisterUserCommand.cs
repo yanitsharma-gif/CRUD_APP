@@ -1,7 +1,5 @@
 using MediatR;
-using Practice.Data;
-using Practice.Models;
-
+using Practice.Repositories;
 namespace Practice.Commands;
 
 public record RegisterUserCommand(
@@ -23,59 +21,45 @@ public class RegisterResult
 public class RegisterUserHandler
     : IRequestHandler<RegisterUserCommand, RegisterResult>
 {
-    private readonly AppDbContext _context;
+    private readonly RegisterRepo _repo;
 
-    public RegisterUserHandler(AppDbContext context)
+    public RegisterUserHandler(RegisterRepo repo)
     {
-        _context = context;
+       
+        _repo = repo;
     }
 
     public async Task<RegisterResult> Handle(
         RegisterUserCommand request,
         CancellationToken cancellationToken)
     {
-        var user = new User
-        {
 
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Username = request.Username,
-            PasswordHash =
-               BCrypt.Net.BCrypt.HashPassword(
-                   request.Password),
-               Address = request.Address,
-               
-        };
+        var user = await _repo.GetUserAsync(request);
 
-        try
+        if (user.Success == 1)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            new RegisterResult {
+                Message = "User registered Succesfully",
+                Success = true
+            };
+
         }
-        catch(Exception error)
+
+        if (user.Success == 2)
         {
-            var innerMessage = error.InnerException?.Message ?? "";
-
-            if (innerMessage.Contains("IX_Users_Email"))
-                return new RegisterResult { Success = false, Message = "Email already exists" };
-
-            if (innerMessage.Contains("IX_Users_Username"))
-                return new RegisterResult { Success = false, Message = "username already taken" };
-
-            if (innerMessage.Contains("IX_Users_Address"))
-                return new RegisterResult { Success = false, Message = "Address already exists" };
-
-            return new RegisterResult { Success = false, Message = "Registration failed" };
+            return new RegisterResult
+            {
+                Message = "Database failure",
+                Success = false
+            };
         }
-      
-
-        
 
         return new RegisterResult
         {
-            Success = true,
-            Message = "User registered successfully"
+            Message = "Username or email already exists",
+            Success = false
+
         };
-    }
+            
+            }
 }

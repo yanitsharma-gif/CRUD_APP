@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Practice.Models;
 using MediatR;
 using Practice.Data;
+using Practice.Repositories;
 namespace Practice.Commands
 {
     public record UpdateCommand
@@ -19,19 +20,17 @@ namespace Practice.Commands
 
     public class UpdateResultHandler:IRequestHandler<UpdateCommand, UpdateResult>
     {
-        private readonly AppDbContext _context;
+        private readonly UpdateRepo _repo;
 
-        public UpdateResultHandler( AppDbContext context)
+        public UpdateResultHandler( UpdateRepo repo)
         {
-            _context = context;
+            _repo = repo;
         }
       public async Task<UpdateResult> Handle(UpdateCommand request,CancellationToken cancellationToken)
         {
-            try
-            {
-                var product = await _context.Products
-                    .FindAsync(new object[] { request.id }, cancellationToken);
-                if (product == null)
+
+            var obj = await _repo.Update(request.updatedproduct, request.id);
+                if (obj.success == false)
                     return new UpdateResult 
           
                     { Success =false,
@@ -39,31 +38,20 @@ namespace Practice.Commands
                     };
 
 
-                product.Name = request.updatedproduct.Name;
-                product.Price = request.updatedproduct.Price;
-
-                await _context.SaveChangesAsync(
-                    cancellationToken);
+               
 
                 return new UpdateResult
                 {
                     Success = true,
                     Message = "data updated successfully",
-                    product = product
+                    product = obj.product
                 };
             }
-            catch (Exception ex)
-            {
-                return new UpdateResult
-                {
-                    Success = false,
-                    Message = ex.Message+" error during updation in database"
-                };
+           
 
-            }
+            
         }
     }
 
 
 
-}

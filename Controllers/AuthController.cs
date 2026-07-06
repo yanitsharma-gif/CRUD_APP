@@ -16,21 +16,19 @@ namespace Practice.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    
   
     private readonly IMediator _mediator;
-    private readonly IConfiguration _configuration;
+   
 
     public AuthController(
-        AppDbContext context,
-       
-        IMediator mediator,
-        IConfiguration configuation)
+        IMediator mediator
+        )
     {
-        _context = context;
+       
         
         _mediator = mediator;
-        _configuration = configuation;
+       
     }
 
     [HttpPost("register")]
@@ -64,48 +62,12 @@ public class AuthController : ControllerBase
 
 
     {
-
-       
-        var user =
-           await _context.Users
-               .FirstOrDefaultAsync(
-                   x => x.Username ==
-                   request.Username);
-
-        if (user == null)
-        {
-            return BadRequest(new
-            {
-                Success = false,
-                Message = "empty user"
-            });
-           
-        }
-
-        var validPassword =
-            BCrypt.Net.BCrypt.Verify(
-                request.Password,
-                user.PasswordHash);
-
-        if (!validPassword)
-        {
-            return BadRequest(new
-            {
-                Success = false,
-                Message = "invalid credentials"
-            });
-        }
-        if (request.secretKey == _configuration["secret"])
-        {
-            user.role = "admin";
-        }
-        else
-        {
-            user.role = "user";
-        }
         var result = await _mediator.Send(
        new LoginUserCommand(
-        user),
+           request.Username,
+           request.Password,
+           request.secretKey
+        ),
        cancellationToken);
 
         if (!result.Success)

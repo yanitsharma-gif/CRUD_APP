@@ -1,16 +1,16 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Practice.Data;
-using Practice.Models;
 using Practice.Services;
-
+using Practice.Repositories;
 namespace Practice.Commands;
 
     public record LoginUserCommand(
-        User user 
-        ): IRequest<LoginResult>;
+    string Username,
+    string Password,
+    string secretKey
+        ) : IRequest<LoginResult>;
 
 
 
@@ -26,27 +26,38 @@ public class LoginResult
 public class LoginUserHandler
 : IRequestHandler<LoginUserCommand, LoginResult>
 {
-    private readonly AppDbContext _context;
+    private readonly LoginRepo _context;
     private readonly JwtService _jwtService;
-    public LoginUserHandler(AppDbContext context, JwtService jwtService)
+    public LoginUserHandler(LoginRepo context, JwtService jwtService)
     {
         _context = context;
         _jwtService = jwtService;
+       
     }
     public async Task<LoginResult> Handle(
         LoginUserCommand request,
         CancellationToken cancellationToken)
     {
+        var user = await _context.GetUserAsync(request);
 
+        if (user == null)
+        {
+            return new LoginResult
+            {
+                Success = false,
+                Message = "User does not exist",
+                Token = ""
 
+            };
+        }
         var token =
-    _jwtService.GenerateToken(request.user);
+    _jwtService.GenerateToken(user);
 
 
         return new LoginResult
         {
             Success = true,
-            Message = "User registered successfully",
+            Message = "User login successfully",
             Token=token
 
         };

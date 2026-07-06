@@ -27,9 +27,8 @@ namespace Practice.Controllers
         public async Task<IActionResult> GetProducts(
             CancellationToken cancellationToken)
         {
-            var products = await _context.Products
-                .ToListAsync(cancellationToken);
-
+            var products = await _mediator.Send(new GetAllCommand(), cancellationToken);
+               
             return Ok(products);
         }
 

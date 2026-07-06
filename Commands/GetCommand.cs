@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Practice.Data;
 using Practice.Models;
+using Practice.Repositories;
 
 namespace Practice.Commands
 {
@@ -20,17 +21,17 @@ namespace Practice.Commands
     public class GetResultHandler : IRequestHandler<GetCommand, GetResult>
     {
 
-        private readonly AppDbContext _context;
-        public GetResultHandler(AppDbContext context)
+        private readonly GetRepo _repo;
+        public GetResultHandler(GetRepo repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public async Task<GetResult> Handle(GetCommand request,
         CancellationToken cancellationToken)
         {
-            var product = await _context.Products
-                     .FindAsync(new object[] { request.Id }, cancellationToken);
+            var product = await _repo.GetById(request.Id);
+                    
 
             if (product == null)
                 return new GetResult
