@@ -23,17 +23,17 @@ namespace Practice.Repositories
           .FirstOrDefaultAsync(
                     x => x.Username ==
                     request.Username);
-           var use2 = await _context.Users
-          .FirstOrDefaultAsync(
-                    x => x.Email ==
-                    request.Email);
+            var use2 = await _context.Users
+           .FirstOrDefaultAsync(
+                     x => x.Email ==
+                     request.Email);
 
-            if (use != null||use2!=null)
+            if (use != null || use2!=null)
             {
                 return new UserResponse
                 {
                     Message = "email or username already exists",
-                    Success =0
+                    Success = 0
                 };
             }
             

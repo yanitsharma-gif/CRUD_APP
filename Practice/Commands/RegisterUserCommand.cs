@@ -35,10 +35,10 @@ public class RegisterUserHandler
     {
 
         var user = await _repo.GetUserAsync(request);
-
+         
         if (user.Success == 1)
         {
-            new RegisterResult {
+         return new RegisterResult {
                 Message = "User registered Succesfully",
                 Success = true
             };
