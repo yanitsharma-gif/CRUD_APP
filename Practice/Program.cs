@@ -15,12 +15,25 @@ using Practice.Middlewares;
 using Practice.Repositories;
 using Practice.Services;
 using Practice.Validators;
-
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+var secretsClient = new AmazonSecretsManagerClient(Amazon.RegionEndpoint.USEast1);
+
+var response = await secretsClient.GetSecretValueAsync(new GetSecretValueRequest
+{
+    SecretId = "my-app-secrets"
+});
+
+builder.Configuration.AddJsonStream(
+    new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response.SecretString))
+);
 builder.Services.AddControllers();
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
