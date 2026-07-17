@@ -125,5 +125,16 @@ namespace Practice.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("/yanit")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> YanitProduct(
+          
+            )
+        {
+           
+              
+            return Ok("Hello bhadwe sounak");
+        }
     }
 }
