@@ -29,6 +29,8 @@ var response = await secretsClient.GetSecretValueAsync(new GetSecretValueRequest
     SecretId = "my-app-secrets"
 });
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Configuration.AddJsonStream(
     new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response.SecretString))
 );
@@ -173,6 +175,7 @@ builder.Services.AddTransient<CustomFactoryMiddleware>();
 
 
 var app = builder.Build();
+app.UseExceptionHandler();
 app.UseMiddleware<CustomFactoryMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
