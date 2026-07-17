@@ -17,8 +17,8 @@ phases:
       - echo Zipping published output...
       - cd publish && zip -r ../app.zip . && cd ..
       - echo Uploading to S3...
-      - aws s3 cp app.zip s3://your-bucket-name/builds/app-$CODEBUILD_BUILD_NUMBER.zip
-      - aws s3 cp app.zip s3://your-bucket-name/builds/latest.zip
+      - aws s3 cp app.zip s3://yanitsharma-crud-app-builds/builds/app-$CODEBUILD_BUILD_NUMBER.zip
+      - aws s3 cp app.zip s3://yanitsharma-crud-app-builds/builds/latest.zip
 
 artifacts:
   files:
