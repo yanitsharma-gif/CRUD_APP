@@ -5,6 +5,6 @@ files:
     destination: /home/ec2-user/deploy
 hooks:
   AfterInstall:
-    location: scripts/deploy.sh
-    timeout: 300
-    runas: root
+    - location: scripts/deploy.sh
+      timeout: 300
+      runas: root
