@@ -1,7 +1,12 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
-    <File Path="Practice/buildspec.yml" />
+    <File Path="appspec.yml" />
+    <File Path="buildspec.yml" />
+    <File Path="Dockerfile" />
+  </Folder>
+  <Folder Name="/Solution Items/scripts/">
+    <File Path="deploy.sh" />
   </Folder>
   <Project Path="Practice.Tests/Practice.Tests.csproj" />
   <Project Path="Practice/Practice.csproj" />
