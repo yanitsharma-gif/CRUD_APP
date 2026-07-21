@@ -174,6 +174,13 @@ builder.Services.AddTransient<CustomFactoryMiddleware>();
 
 var app = builder.Build();
 app.UseExceptionHandler();
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    await next();
+    Console.WriteLine($"Response: {context.Response.StatusCode}");
+});
 app.UseMiddleware<CustomFactoryMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
