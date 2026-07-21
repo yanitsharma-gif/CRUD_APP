@@ -4,6 +4,12 @@
     <File Path="appspec.yml" />
     <File Path="buildspec.yml" />
     <File Path="Dockerfile" />
+    <File Path="secrets-policy.json" />
+    <File Path="trust-policy.json" />
+  </Folder>
+  <Folder Name="/Solution Items/k8s/">
+    <File Path="deployment.yaml" />
+    <File Path="service.yaml" />
   </Folder>
   <Folder Name="/Solution Items/scripts/">
     <File Path="deploy.sh" />
