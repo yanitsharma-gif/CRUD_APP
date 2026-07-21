@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-api
@@ -16,6 +16,7 @@ spec:
       containers:
       - name: my-api
         image: 751505269853.dkr.ecr.us-east-1.amazonaws.com/myapp:latest
+        imagePullPolicy: Always    # ✅ correct — inside container spec
         ports:
         - containerPort: 5000
         resources:

@@ -34,7 +34,6 @@ builder.Configuration.AddJsonStream(
     new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response.SecretString))
 );
 builder.Services.AddControllers();
-builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
