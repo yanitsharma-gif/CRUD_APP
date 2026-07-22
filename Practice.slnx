@@ -9,6 +9,7 @@
   </Folder>
   <Folder Name="/Solution Items/k8s/">
     <File Path="deployment.yaml" />
+    <File Path="ingress.yaml" />
     <File Path="service.yaml" />
   </Folder>
   <Folder Name="/Solution Items/scripts/">
