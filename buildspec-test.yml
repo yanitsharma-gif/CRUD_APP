@@ -2,8 +2,17 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      dotnet: 10.0
+    commands:
+      - echo Installing .NET 10 SDK manually...
+      - curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
+      - chmod +x dotnet-install.sh
+      - ./dotnet-install.sh --channel 10.0 --install-dir /usr/share/dotnet
+      - export PATH=/usr/share/dotnet:$PATH
+      - export DOTNET_ROOT=/usr/share/dotnet
+      - dotnet --version
+      - dotnet --list-sdks
+
+  pre_build:
     commands:
       - echo Restoring dependencies...
       - dotnet restore Practice.sln
