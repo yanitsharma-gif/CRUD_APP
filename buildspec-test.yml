@@ -16,10 +16,10 @@ phases:
       - export PATH=/usr/share/dotnet:$PATH
       - export DOTNET_ROOT=/usr/share/dotnet
       - echo Restoring dependencies...
-      - dotnet restore Practice.sln
+      - dotnet restore Practice.slnx
       - echo Test phase started on `date`
       - echo Running unit tests...
-      - dotnet test Practice.sln --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+      - dotnet test Practice.slnx --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
 
 reports:
   dotnet-test-reports:
