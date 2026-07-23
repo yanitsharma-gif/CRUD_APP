@@ -2,11 +2,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-api-ingress
-  namespace: default                          # match your app's actual namespace
+  namespace: default
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/healthcheck-path: /swagger   # change to your real health route, or / if that returns 200
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/group.name: shared-alb
 spec:
   ingressClassName: alb
   rules:
@@ -16,6 +17,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: my-api-service           # must match your Service's metadata.name
+                name: my-api-service
                 port:
-                  number: 80                   # must match your Service's spec.ports.port
+                  number: 80

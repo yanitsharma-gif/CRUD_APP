@@ -1,7 +1,8 @@
-﻿apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-api
+  namespace: default
 spec:
   replicas: 2
   selector:
@@ -16,7 +17,7 @@ spec:
       containers:
       - name: my-api
         image: 751505269853.dkr.ecr.us-east-1.amazonaws.com/myapp:latest
-        imagePullPolicy: Always    # ✅ correct — inside container spec
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         resources:
@@ -26,3 +27,15 @@ spec:
           limits:
             cpu: "500m"
             memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20

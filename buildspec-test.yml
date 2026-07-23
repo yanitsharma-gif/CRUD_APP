@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      dotnet: 10.0
+    commands:
+      - echo Restoring dependencies...
+      - dotnet restore Practice.sln
+
+  build:
+    commands:
+      - echo Test phase started on `date`
+      - echo Running unit tests...
+      - dotnet test Practice.sln --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+
+reports:
+  dotnet-test-reports:
+    files:
+      - '**/test_results.trx'
+    base-directory: './TestResults'
+    file-format: 'VisualStudioTrx'

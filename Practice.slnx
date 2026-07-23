@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
     <File Path="appspec.yml" />
+    <File Path="buildspec-test.yml" />
     <File Path="buildspec.yml" />
     <File Path="Dockerfile" />
     <File Path="secrets-policy.json" />
