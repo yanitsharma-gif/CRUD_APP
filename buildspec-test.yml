@@ -10,15 +10,13 @@ phases:
       - export PATH=/usr/share/dotnet:$PATH
       - export DOTNET_ROOT=/usr/share/dotnet
       - dotnet --version
-      - dotnet --list-sdks
-
-  pre_build:
-    commands:
-      - echo Restoring dependencies...
-      - dotnet restore Practice.sln
 
   build:
     commands:
+      - export PATH=/usr/share/dotnet:$PATH
+      - export DOTNET_ROOT=/usr/share/dotnet
+      - echo Restoring dependencies...
+      - dotnet restore Practice.sln
       - echo Test phase started on `date`
       - echo Running unit tests...
       - dotnet test Practice.sln --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
